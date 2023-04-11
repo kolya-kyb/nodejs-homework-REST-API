@@ -19,7 +19,7 @@ const contactSchema = new Schema({
     default: false,
   }
 },
-  {versionKey: false, timestamps: true});
+  {versionKey: false, timestamps: false});
 
 contactSchema.post("save", handleMongooseError);
 
@@ -46,11 +46,7 @@ const addSchema =  Joi.object({
       "string.empty": `phone cannot be empty`,
       'string.pattern.base': `Phone number must have 10 digits.`
     }),
-  favorite: Joi.boolean()
-    .required()
-    .messages(
-      {"any.required": `missing required favorite`
-      }),
+  favorite: Joi.boolean(),
 })
 
 const updateSchema =  Joi.object({
