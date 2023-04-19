@@ -50,11 +50,12 @@ const login = async(req, res) => {
 }
 
 const getCurrent = async(req, res)=> {
-  const {name, email} = req.user;
+  const { email, subscription} = req.user;
 
   res.json({
-    name,
     email,
+    subscription,
+
   })
 }
 
@@ -62,9 +63,23 @@ const logout = async(req, res)=> {
   const {_id} = req.user;
   await User.findByIdAndUpdate(_id, {token: ""});
 
-  res.json({
-    message: "Logout success"
-  })
+  res.status(204).json({message: "No Content"});
+}
+
+const updateSubscription= async (req, res) => {
+  const {_id} = req.user;
+  if (Object.keys(req.body).length === 0 || req.body === null || req.body === undefined) {
+
+    throw HttpError(400);
+  }
+  try {
+    const result = await User.findByIdAndUpdate(_id, req.body, {new: true});
+    res.json(result);
+  } catch (err) {
+    if (err.message && ~err.message.indexOf('Cast to ObjectId failed')) {
+      throw HttpError(404);
+    }
+  }
 }
 
 module.exports = {
@@ -72,4 +87,5 @@ module.exports = {
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  updateSubscription: ctrlWrapper(updateSubscription),
 }
